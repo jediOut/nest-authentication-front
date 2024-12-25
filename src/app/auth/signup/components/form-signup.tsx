@@ -7,13 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
+import { login } from "@/app/api/auth/login";
 
 const SignUpForm: React.FC = () => {
-  
   const [formData, setFormData] = useState<SignUpData>({
     email: "",
     password: "",
   });
+
+  const { login: authLogin } = useAuth();
 
   const router = useRouter();
 
@@ -28,14 +31,14 @@ const SignUpForm: React.FC = () => {
     e.preventDefault();
     try {
       const token = await signUp(formData.email, formData.password);
-      
-      localStorage.setItem("acces_token", token)
 
-      setMessage("Registro exitoso");
-
-      router.push("/dashboard")
+      authLogin(token);
+      setMessage("registro exitoso");
+      router.push("/protected/dashboard");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error: any) {
-      
       setMessage(error.message || "Error al  registrarse");
     }
   };

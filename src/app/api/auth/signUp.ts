@@ -12,13 +12,16 @@ export const signUp = async (
     });
 
     if (response.status === 201) {
-      const { acces_token } = response.data.acces_token;
-
-      Cookies.set("acces_token", acces_token, {
+      const token = response.data.acces_token;
+      Cookies.set("access_token", token, {
         path: "/",
-        secure: true,
-        htppOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: false,
+        expires: 1,
       });
+      console.log(token);
+
+      return token;
     }
 
     throw new Error("Respuesta inesperada del servidor");
